@@ -3,37 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Langton's Ant – Per-Ant Rules & Type List</title>
+  <title>Langton's Ant – Mobile‑Optimised</title>
   <style>
-    html, body { margin: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; font-family: system-ui, sans-serif; }
-    canvas { display: block; width: 100vw; height: 100vh; image-rendering: pixelated; }
+    /* ---------- Base layout ---------- */
+    html,body{margin:0;height:100%;width:100%;overflow:hidden;background:#000;font-family:system-ui,sans-serif;}
+    canvas{display:block;width:100vw;height:100vh;image-rendering:pixelated;}
 
-    .uiBox { position: fixed; left: 10px; z-index: 10; background: rgba(0,0,0,0.7); color:#ffffff; padding: 6px 10px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; user-select: none; }
-    #speedBox { top: 10px; }
-    #newAntBox { top: 58px; }
-    #generalBox { top: 122px; }
+    .uiBox{position:fixed;z-index:10;background:rgba(0,0,0,.7);color:#fff;padding:6px 10px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.6);display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14px;user-select:none;}
+    #speedBox{top:10px;left:50%;transform:translateX(-50%);} /* centred */
+    #newAntBox{top:58px;left:10px;}  /* desktop default */
+    #generalBox{top:122px;left:10px;}
 
-    /* Right‑side type list */
-    #typePanel { position: fixed; right: 10px; top: 10px; width: 230px; max-height: 90vh; overflow-y: auto; z-index: 10; background: rgba(0,0,0,0.7); color:#ffffff; padding: 8px 10px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.6); font-size: 14px; }
-    #typePanel h3 { margin: 0 0 6px 0; font-size: 15px; }
-    .typeEntry { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
-    .swatch { width: 14px; height: 14px; border: 1px solid #555; border-radius: 2px; }
-    .typeRule { font-weight: 600; }
-    .addTypeBtn { cursor: pointer; border: 1px solid #aaa; background: #333; color:#fff; border-radius: 4px; padding: 1px 6px; font-size: 13px; }
-    .addTypeBtn:hover { background: #555; }
+    /* Type list (desktop) */
+    #typePanel{position:fixed;right:10px;top:10px;width:230px;max-height:90vh;overflow-y:auto;z-index:10;background:rgba(0,0,0,.7);color:#fff;padding:8px 10px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.6);font-size:14px;}
+    #typePanel h3{margin:0 0 6px 0;font-size:15px;}
+    .typeEntry{display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap;}
+    .swatch{width:14px;height:14px;border:1px solid #555;border-radius:2px;}
+    .typeRule{font-weight:600;}
+    .addTypeBtn{cursor:pointer;border:1px solid #aaa;background:#333;color:#fff;border-radius:4px;padding:1px 6px;font-size:13px;}
+    .addTypeBtn:hover{background:#555;}
 
-    input[type="number"], input[type="text"]{ width: 60px; }
-    input[type="text"]{ width: 90px; }
-    button{ cursor:pointer; padding:2px 10px; border:1px solid #aaa; border-radius:4px; background:#333; color:#fff; }
-    button:hover{ background:#555; }
+    input[type="number"],input[type="text"]{width:60px;}
+    input[type="text"]{width:90px;}
+    button{cursor:pointer;padding:2px 10px;border:1px solid #aaa;border-radius:4px;background:#333;color:#fff;}
+    button:hover{background:#555;}
+
+    /* ---------- Mobile tweaks ---------- */
+    @media (max-width:600px){
+      .uiBox{font-size:12px;gap:4px;}
+
+      /* Speed slider centred */
+      #speedBox{top:6px;left:50%;transform:translateX(-50%);}  
+
+      /* Refresh – upper left */
+      #generalBox{top:6px;left:10px;}
+
+      /* Rule & colours – just below refresh */
+      #newAntBox{top:46px;left:10px;}
+
+      /* Add Ant button – fixed upper right */
+      #addAnt{
+        position:fixed;
+        top:6px;
+        right:10px;
+        z-index:11;
+      }
+
+      /* Ant type list – bottom */
+      #typePanel{left:0;right:0;top:auto;bottom:0;width:100%;max-height:40vh;display:flex;flex-direction:column;align-items:flex-start;}
+      #typePanel h3{font-size:14px;margin-bottom:4px;}
+      .typeEntry{font-size:12px;margin-bottom:2px;}
+
+      input[type="text"],input[type="number"]{width:68px;}
+
+      /* Shrink colour pickers and swatches */
+      #colorArea input[type="color"]{width:28px;height:28px;padding:0;border:none;}
+      .swatch{width:12px;height:12px;}
+    }
   </style>
 </head>
 <body>
-  <!-- LEFT controls -->
+  <!-- TOP controls -->
   <div id="speedBox" class="uiBox">
     <label for="speedSlider">Speed:</label>
     <input type="range" id="speedSlider" min="1" max="500" step="1" value="1" />
     <span id="speedVal">1</span>
+  </div>
+
+  <div id="generalBox" class="uiBox">
+    <button id="refreshBtn">Refresh</button>
   </div>
 
   <div id="newAntBox" class="uiBox">
@@ -44,11 +82,7 @@
     <button id="addAnt">Add Ant</button>
   </div>
 
-  <div id="generalBox" class="uiBox">
-    <button id="refreshBtn">Refresh</button>
-  </div>
-
-  <!-- RIGHT panel listing ant types -->
+  <!-- Ant type list -->
   <div id="typePanel">
     <h3>Ant Types</h3>
     <div id="typeList"></div>
@@ -60,118 +94,139 @@
     const canvas = document.getElementById('antCanvas');
     const ctx = canvas.getContext('2d');
 
-    // ----- UI elements -----
+    /* -------- UI elements -------- */
     const speedSlider = document.getElementById('speedSlider');
-    const speedVal = document.getElementById('speedVal');
+    const speedVal    = document.getElementById('speedVal');
     const antRuleInput = document.getElementById('antRule');
-    const colorArea = document.getElementById('colorArea');
-    const addAntBtn = document.getElementById('addAnt');
-    const refreshBtn = document.getElementById('refreshBtn');
+    const colorArea   = document.getElementById('colorArea');
+    const addAntBtn   = document.getElementById('addAnt');
+    const refreshBtn  = document.getElementById('refreshBtn');
     const typeListDiv = document.getElementById('typeList');
 
-    // ----- Simulation state -----
+    /* -------- Simulation state -------- */
     const cellSize = 4;
-    const ants = [];            // active ants
-    const antTypes = new Map(); // key => {ruleStr, ruleOffsets, colors}
-    let stepsPerFrame = 1;
+    const ants     = [];
+    const antTypes = new Map();
+    let   stepsPerFrame = 1;
 
-    // ---------- Helper UI builders ----------
+    /* -------- Helper UI builders -------- */
+    function ensureAddBtnVisible(){
+      addAntBtn.style.display = 'inline-block';
+    }
+
     function buildColorPickers(ruleLen){
-      colorArea.innerHTML='';
-      // Default palette starts with WHITE then BLACK so first ant has #ffffff and #000000
-      const palette=['#ffffff','#000000','#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff','#aaaaaa'];
+      colorArea.innerHTML = '';
+      const palette = ['#ffffff','#000000','#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff','#aaaaaa'];
       for(let i=0;i<ruleLen;i++){
-        const c=document.createElement('input');
-        c.type='color';
-        c.value=palette[i%palette.length];
+        const c = document.createElement('input');
+        c.type  = 'color';
+        c.value = palette[i % palette.length];
         colorArea.appendChild(c);
       }
+      ensureAddBtnVisible();
     }
     buildColorPickers(2);
 
-    function createTypeKey(ruleStr, colors){
-      return ruleStr + '|' + colors.join(',');
-    }
-
     function renderTypeList(){
-      typeListDiv.innerHTML='';
+      typeListDiv.innerHTML = '';
       antTypes.forEach((type)=>{
-        const entry=document.createElement('div');
-        entry.className='typeEntry';
+        const entry = document.createElement('div');
+        entry.className = 'typeEntry';
 
-        const ruleSpan=document.createElement('span');
-        ruleSpan.className='typeRule';
-        ruleSpan.textContent=type.ruleStr;
+        const ruleSpan = document.createElement('span');
+        ruleSpan.className = 'typeRule';
+        ruleSpan.textContent = type.ruleStr;
         entry.appendChild(ruleSpan);
 
         type.colors.forEach(col=>{
-          const sw=document.createElement('span');
-          sw.className='swatch';
-          sw.style.background=col;
+          const sw = document.createElement('span');
+          sw.className = 'swatch';
+          sw.style.background = col;
           entry.appendChild(sw);
         });
 
-        const addBtn=document.createElement('button');
-        addBtn.className='addTypeBtn';
-        addBtn.textContent='Add';
-        addBtn.addEventListener('click',()=> addAntOfType(type));
+        const addBtn = document.createElement('button');
+        addBtn.className = 'addTypeBtn';
+        addBtn.textContent = 'Add';
+        addBtn.addEventListener('click', ()=>addAnt(type.ruleOffsets, type.colors, type.ruleStr));
         entry.appendChild(addBtn);
 
         typeListDiv.appendChild(entry);
       });
     }
 
-    // ---------- Input reactions ----------
-    antRuleInput.addEventListener('input',()=>{
-      const letters=[...antRuleInput.value.toUpperCase()].filter(ch=>ch==='L'||ch==='R');
-      if(letters.length) buildColorPickers(letters.length);
+    /* -------- Input reactions -------- */
+    antRuleInput.addEventListener('input', ()=>{
+      const letters = [...antRuleInput.value.toUpperCase()].filter(ch=>ch==='L'||ch==='R');
+      buildColorPickers(letters.length || 1);
     });
 
-    speedSlider.addEventListener('input',()=>{
-      stepsPerFrame=parseInt(speedSlider.value,10);
-      speedVal.textContent=stepsPerFrame;
+    speedSlider.addEventListener('input', ()=>{
+      stepsPerFrame = parseInt(speedSlider.value, 10);
+      speedVal.textContent = stepsPerFrame;
     });
 
-    // ---------- Ant creation ----------
+    /* -------- Ant creation -------- */
     function addAnt(ruleOffsets, colors, ruleStr){
-      const {cols,rows}=dims();
-      ants.push({ x:Math.floor(Math.random()*cols), y:Math.floor(Math.random()*rows), dir:Math.floor(Math.random()*4), ruleOffsets, colors, states:new Map() });
-      const key=createTypeKey(ruleStr, colors);
+      const {cols, rows} = dims();
+      ants.push({
+        x: Math.floor(Math.random()*cols),
+        y: Math.floor(Math.random()*rows),
+        dir: Math.floor(Math.random()*4),
+        ruleOffsets,
+        colors,
+        states: new Map()
+      });
+      const key = ruleStr+'|'+colors.join(',');
       if(!antTypes.has(key)){
-        antTypes.set(key,{ ruleStr, ruleOffsets, colors });
+        antTypes.set(key, {ruleStr, ruleOffsets, colors});
         renderTypeList();
       }
     }
 
-    function addAntOfType(type){ addAnt(type.ruleOffsets, type.colors, type.ruleStr); }
-
-    addAntBtn.addEventListener('click',()=>{
-      const rule=[...antRuleInput.value.toUpperCase()].filter(ch=>ch==='L'||ch==='R');
+    addAntBtn.addEventListener('click', ()=>{
+      const rule = [...antRuleInput.value.toUpperCase()].filter(ch=>ch==='L'||ch==='R');
       if(!rule.length){ alert('Rule must contain L and/or R'); return; }
-      const ruleOffsets=rule.map(ch=>ch==='R'?1:3);
-      const colors=[...colorArea.querySelectorAll('input[type=color]')].map(i=>i.value);
+      const ruleOffsets = rule.map(ch=> ch==='R' ? 1 : 3);  // Right turn = +1, Left = -1 (+3 mod 4)
+      const colors = [...colorArea.querySelectorAll('input[type=color]')].map(i=>i.value);
       addAnt(ruleOffsets, colors, rule.join(''));
     });
 
-    // ---------- Refresh ----------
-    refreshBtn.addEventListener('click',()=>{ init(true); antTypes.clear(); renderTypeList(); });
+    /* -------- Refresh -------- */
+    refreshBtn.addEventListener('click', ()=>{
+      init(true);
+      antTypes.clear();
+      renderTypeList();
+    });
 
-    // ---------- Canvas/grid helpers ----------
-    function dims(){ return { cols:Math.floor(canvas.width/cellSize), rows:Math.floor(canvas.height/cellSize) }; }
-    function key(x,y){ return y+','+x; }
+    /* -------- Canvas/grid helpers -------- */
+    function dims(){
+      return {
+        cols: Math.floor(canvas.width / cellSize),
+        rows: Math.floor(canvas.height / cellSize)
+      };
+    }
+    const keyCoord = (x,y)=> y + ',' + x;
 
-    // ---------- Simulation core ----------
+    /* -------- Simulation core -------- */
     function stepAnt(a){
-      const {cols,rows}=dims();
-      const k=key(a.x,a.y);
-      const state=a.states.get(k)||0;
-      const offset=a.ruleOffsets[state%a.ruleOffsets.length];
-      a.dir=(a.dir+offset)&3;
-      const newState=(state+1)%a.ruleOffsets.length;
-      a.states.set(k,newState);
-      ctx.fillStyle=a.colors[newState]||'#ffffff';
-      ctx.fillRect(a.x*cellSize,a.y*cellSize,cellSize,cellSize);
-      switch(a.dir){ case 0:a.y=(a.y-1+rows)%rows;break; case 1:a.x=(a.x+1)%cols;break; case 2:a.y=(a.y+1)%rows;break; case 3:a.x=(a.x-1+cols)%cols;break; }
+      const {cols, rows} = dims();
+      const k = keyCoord(a.x, a.y);
+      const state   = a.states.get(k) || 0;
+      const offset  = a.ruleOffsets[state % a.ruleOffsets.length];
+      a.dir = (a.dir + offset) & 3;
+      const newState = (state + 1) % a.ruleOffsets.length;
+      a.states.set(k, newState);
+
+      ctx.fillStyle = a.colors[newState] || '#ffffff';
+      ctx.fillRect(a.x*cellSize, a.y*cellSize, cellSize, cellSize);
+
+      switch(a.dir){
+        case 0: a.y = (a.y - 1 + rows) % rows; break; // up
+        case 1: a.x = (a.x + 1) % cols; break;        // right
+        case 2: a.y = (a.y + 1) % rows; break;        // down
+        case 3: a.x = (a.x - 1 + cols) % cols; break; // left
+      }
     }
 
     function animate(){
@@ -179,16 +234,17 @@
       requestAnimationFrame(animate);
     }
 
-    // ---------- Initialization ----------
+    /* -------- Initialisation & resize -------- */
     function init(blank=false){
-      canvas.width=window.innerWidth;
-      canvas.height=window.innerHeight;
-      ctx.fillStyle='#000000';
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      ctx.fillStyle = '#000';
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      if(blank) ants.length=0;
+      if(blank) ants.length = 0;
+      ensureAddBtnVisible();
     }
 
-    window.addEventListener('resize',()=>init());
+    window.addEventListener('resize', ()=>init());
     init();
     requestAnimationFrame(animate);
   </script>
